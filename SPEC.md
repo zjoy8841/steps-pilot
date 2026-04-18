@@ -7,8 +7,9 @@
 
 ### ✅ 1. 인증
 
-- [ ]  학생 로그인 (학교명 / 학년 / 이름 or 학번)
-- [ ]  로그아웃
+- [x]  학생 로그인 (학교명 / 학년 / 이름 입력 → Supabase users 테이블 조회)
+- [x]  세션 유지 (localStorage, 재방문 시 자동 로그인)
+- [x]  로그아웃 확인 모달 (햄버거 메뉴 → 확인 후 로그아웃)
 - [ ]  관리자 로그인 (영상 및 성취기준 관리용)
 
 > **세션 정책**: 첫 로그인 시 학교명·학년·이름 입력 → 이후 자동 로그인 (세션 유지).
@@ -16,15 +17,16 @@
 
 ### ✅ 2. 성취기준 맵
 
-- [ ]  중2 수학 성취기준 목록 표시
-- [ ]  성취기준 간 위계(선수학습) 시각화
-- [ ]  각 성취기준별 학습 완료 여부 표시 (시청 완료 기준)
-- [ ]  성취기준 클릭 시 연결된 쇼츠 목록 표시
+- [x]  단원별 성취기준 목록 표시 (수와 연산 / 방정식과 부등식 / 도형과 측정)
+- [x]  성취기준별 상태 표시 (완료 / 진행 중 / 잠김)
+- [x]  영상별 시청 바 표시 (완료 초록 / 넘김 주황 / 미시청 회색)
+- [x]  전체 학습 진도 % 표시
+- [ ]  성취기준 클릭 시 해당 영상으로 이동 (실제 데이터 연동 후 구현)
 
 ### ✅ 3. 쇼츠 추천 & 탐색
 
-- [ ]  성취기준 기반 영상 추천 (해당 성취기준에 태깅된 영상)
-- [ ]  전체 영상 목록 탐색 가능
+- [ ]  성취기준 기반 영상 추천 (실제 데이터 연동 후 구현)
+- [ ]  전체 영상 목록 탐색
 - [ ]  영상별 성취기준 태그 표시
 
 ### ✅ 3-1. 추천 알고리즘 (파일럿)
@@ -49,9 +51,11 @@
 
 ### ✅ 4. 쇼츠 시청
 
-- [ ]  YouTube IFrame으로 영상 재생
-- [ ]  시청 완료 시 해당 성취기준 진도 업데이트
-- [ ]  시청 기록 저장
+- [x]  YouTube IFrame으로 영상 재생
+- [x]  성취기준 카테고리 탭 (상단 가로 스크롤)
+- [x]  이전 / 다음 영상 이동
+- [x]  영상 완료 후 바텀시트 (학습 완료 확인 + 다음 영상 / 성취기준 맵 이동)
+- [ ]  시청 완료율(watch_rate) 추적 → Supabase watch_history 저장 (실제 데이터 연동 후)
 
 ### ✅ 5. 관리자 기능
 
@@ -94,15 +98,30 @@
 
 ## 기술 스택
 
-- Frontend: React
-- Backend / DB / Auth: Supabase
-- 영상: YouTube IFrame API
+- Frontend: React + Vite + TypeScript
+- Backend / DB / Auth: Supabase (PostgreSQL)
+- 영상: YouTube IFrame API (unlisted 영상)
 - 스타일: Tailwind CSS
-- 배포: Vercel (예정)
+- 배포: Vercel (완료)
+- PWA: vite-plugin-pwa (홈 화면 추가 지원)
 
 ---
 
-## DB 테이블 (초안)
+## 디렉토리 구조
+
+```
+src/
+  components/     # Drawer, LogoutModal, CompleteSheet
+  contexts/       # AuthContext (전역 로그인 상태)
+  hooks/          # useAuth (레거시, AuthContext로 이전)
+  lib/            # supabase.ts (클라이언트)
+  pages/          # WelcomePage, LoginPage, MainPage, AchievementMapPage
+  types/          # User, Role 타입
+```
+
+---
+
+## DB 테이블
 
 ### users (통합 계정)
 
@@ -115,7 +134,6 @@
 | role | text | student / teacher / admin |
 
 > 파일럿 권한 정책: teacher와 admin 모두 영상 등록 가능. 삭제는 admin만. 추후 세분화 예정.
-> 
 
 ### achievements (성취기준)
 
@@ -143,7 +161,6 @@
 | achievement_id | uuid | FK |
 
 > 영상 1개 → 성취기준 여러 개 태깅 가능 (다대다)
-> 
 
 ### watch_history (시청 기록)
 
@@ -166,13 +183,16 @@
 - [x]  React 프로젝트 초기화 (Vite + React + TypeScript + Tailwind + Supabase JS)
 - [x]  Supabase 프로젝트 생성 (steps-pilot / Northeast Asia Seoul)
 - [x]  DB 스키마 세팅 (테이블 5개: users, achievements, videos, video_achievements, watch_history)
-- [x]  로그인 화면 구현 (학교명/학년/이름 입력 → Supabase 조회 → 세션 유지)
+- [x]  로그인 화면 구현 (학교명/학년/이름 → Supabase 조회 → localStorage 세션 유지)
+- [x]  AuthContext 구현 (전역 로그인 상태 공유)
 - [x]  쇼츠 시청 화면 구현 (YouTube IFrame, 카테고리 탭, 햄버거 드로어 — 더미 데이터)
 - [x]  성취기준 맵 구현 (단원별 성취기준, 영상별 시청 바 — 더미 데이터)
-- [ ]  로그아웃 확인 모달 구현
-- [ ]  영상 완료 후 바텀시트 구현
+- [x]  로그아웃 확인 모달 구현
+- [x]  영상 완료 후 바텀시트 구현
+- [x]  PWA 설정 (vite-plugin-pwa, 홈 화면 추가 지원, 아이콘)
+- [x]  GitHub 업로드 (zjoy8841/steps-pilot, public)
+- [x]  Vercel 배포 완료
 - [ ]  관리자 화면 구현 (영상 등록/삭제, 성취기준 관리)
-- [ ]  Vercel 배포
 
 ## 실제 데이터 연동 (영상 확보 후)
 
@@ -186,8 +206,12 @@
 - [ ]  AchievementMapPage: 더미 데이터 → `watch_history` 읽어서 완료율 바 렌더링으로 교체
 - [ ]  추천 알고리즘 적용 (선수학습 완료 기준 다음 단계 영상 우선 노출)
 
+---
+
 ## 환경 설정 현황
 
 - Supabase URL: https://qvctejeahzokfoxwohht.supabase.co
 - Supabase 리전: Northeast Asia (Seoul)
-- API 키: .env 파일에 저장 (VITE_SUPABASE_ANON_KEY)
+- API 키: .env 파일에 저장, Vercel 환경변수에도 등록 완료
+- GitHub: https://github.com/zjoy8841/steps-pilot
+- Vercel: steps-pilot.vercel.app (자동 배포 — main 브랜치 push 시 재배포)
