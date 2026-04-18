@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=375, initial-scale=1.0" />
+  <title>Steps — 추가 화면</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent:        #6366f1;
+      --accent2:       #a855f7;
+      --bg-dark:       #0a0a14;
+      --surface:       #12121e;
+      --surface2:      #1a1a2e;
+      --glass-bg:      rgba(255,255,255,0.07);
+      --glass-border:  rgba(255,255,255,0.12);
+      --glass-blur:    blur(16px);
+      --text-primary:  rgba(255,255,255,0.90);
+      --text-secondary:rgba(255,255,255,0.45);
+      --text-muted:    rgba(255,255,255,0.22);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #0e0e0e;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px 0 64px;
+      gap: 36px;
+    }
+
+    .screen-wrap { display: flex; flex-direction: column; align-items: center; }
+    .screen-label {
+      color: #555;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* ── 폰 프레임 ── */
+    .device {
+      width: 375px;
+      height: 812px;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        0 0 0 10px #1c1c1e,
+        0 0 0 11px #3a3a3c,
+        0 40px 80px rgba(0,0,0,.7);
+      flex-shrink: 0;
+      background: var(--bg-dark);
+    }
+    .notch {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 126px; height: 30px;
+      background: #1c1c1e;
+      border-radius: 0 0 22px 22px;
+      z-index: 200;
+    }
+
+    /* 공통 배경 */
+    .dark-bg {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-dark);
+    }
+    .bg-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 40% at 50% 0%,
+        rgba(99,102,241,.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ────────────────────────────────
+       SCREEN 1 — 성취기준 맵
+    ──────────────────────────────── */
+    .map-screen {
+      position: relative;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 헤더 */
+    .map-header {
+      position: relative;
+      z-index: 10;
+      padding: 52px 20px 16px;
+      background: linear-gradient(to bottom, var(--bg-dark) 80%, transparent);
+      flex-shrink: 0;
+    }
+    .map-header-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .icon-btn {
+      width: 38px; height: 38px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .map-title {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -.4px;
+    }
+
+    /* 전체 진도 카드 */
+    .progress-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .pc-left { flex: 1; }
+    .pc-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .pc-bar {
+      height: 6px;
+      background: rgba(255,255,255,.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .pc-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .pc-sub {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 5px;
+    }
+    .pc-pct {
+      font-size: 26px;
+      font-weight: 900;
+      color: #a5b4fc;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .pc-pct span { font-size: 13px; font-weight: 500; }
+
+    /* 스크롤 영역 */
+    .map-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 4px 20px 32px;
+      position: relative;
+      z-index: 5;
+    }
+    .map-scroll::-webkit-scrollbar { display: none; }
+
+    /* 단원 섹션 */
+    .unit-section { margin-bottom: 10px; }
+
+    .unit-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 6px;
+    }
+    .unit-header.green  { background: rgba(88,204,2,.12);  border: 1px solid rgba(88,204,2,.2); }
+    .unit-header.blue   { background: rgba(28,176,246,.10); border: 1px solid rgba(28,176,246,.18); }
+    .unit-header.purple { background: rgba(168,85,247,.10); border: 1px solid rgba(168,85,247,.18); }
+    .unit-header.locked { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
+
+    .unit-header-left { display: flex; align-items: center; gap: 10px; }
+    .unit-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-green  { background: #58CC02; box-shadow: 0 0 6px rgba(88,204,2,.5); }
+    .dot-blue   { background: #1CB0F6; box-shadow: 0 0 6px rgba(28,176,246,.5); }
+    .dot-purple { background: #a855f7; box-shadow: 0 0 6px rgba(168,85,247,.5); }
+    .dot-gray   { background: rgba(255,255,255,.2); }
+
+    .unit-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .unit-locked .unit-name { color: var(--text-muted); }
+    .unit-count {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* 성취기준 아이템 */
+    .ach-list { display: flex; flex-direction: column; gap: 5px; padding-left: 8px; }
+
+    .ach-item {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 13px 14px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.06);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .ach-item.current {
+      background: rgba(99,102,241,.12);
+      border-color: rgba(99,102,241,.35);
+    }
+    .ach-item.done   { opacity: .8; }
+    .ach-item.locked { opacity: .38; cursor: default; }
+
+    /* 좌측 세로 바 */
+    .ach-item.current::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10%; bottom: 10%;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--accent), var(--accent2));
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* 아이템 상단 행 */
+    .ach-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ach-status-icon {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .si-done    { background: rgba(88,204,2,.15); }
+    .si-current { background: rgba(99,102,241,.2); }
+    .si-locked  { background: rgba(255,255,255,.06); }
+
+    .ach-info { flex: 1; min-width: 0; }
+    .ach-code {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: .5px;
+      margin-bottom: 2px;
+    }
+    .ach-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ach-item.locked .ach-name { color: var(--text-muted); }
+
+    .ach-chevron {
+      color: var(--text-muted);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    /* ── 영상별 시청 현황 바 ── */
+    .video-bars {
+      display: flex;
+      gap: 6px;
+    }
+    .vb-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .vb-track {
+      height: 5px;
+      background: rgba(255,255,255,.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    .vb-fill {
+      height: 100%;
+      border-radius: 3px;
+      position: absolute;
+      left: 0; top: 0;
+    }
+    /* 완료: 초록 */
+    .vb-fill.done    { background: #4ade80; width: 100%; }
+    /* 넘김: 주황 (watch_rate만큼 채워짐) */
+    .vb-fill.skipped { background: #fb923c; }
+    /* 미시청: 채움 없음 */
+    .vb-fill.unseen  { width: 0; }
+
+    .vb-label {
+      font-size: 9px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .vb-label.done    { color: #4ade80; }
+    .vb-label.skipped { color: #fb923c; }
+    .vb-label.unseen  { color: var(--text-muted); }
+
+    /* 범례 */
+    .map-legend {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,.04);
+      border-radius: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-dot {
+      width: 8px; height: 4px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .legend-text {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* 연결선 (단원 내 아이템 사이) */
+    .connector {
+      width: 1px;
+      height: 8px;
+      background: rgba(255,255,255,.08);
+      margin: 0 auto 0 28px;
+    }
+
+
+    /* ────────────────────────────────
+       SCREEN 2 — 영상 완료 후
+    ──────────────────────────────── */
+    .complete-screen {
+      position: relative;
+      width: 100%; height: 100%;
+    }
+
+    /* 배경: 영상이 계속 있는 느낌 (흐릿하게) */
+    .complete-video-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #0d0d1a 0%, #0f172a 40%, #1a0533 100%);
+    }
+    .complete-video-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    /* 배경에 수식 희미하게 */
+    .cv-eq {
+      position: absolute;
+      font-size: 110px;
+      font-weight: 900;
+      color: rgba(255,255,255,.03);
+      user-select: none;
+      top: 18%; left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* 완료 바텀시트 */
+    .complete-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-radius: 28px 28px 0 0;
+      border-top: 1px solid rgba(255,255,255,.1);
+      padding: 28px 24px 52px;
+      z-index: 10;
+    }
+
+    /* 드래그 핸들 */
+    .sheet-handle {
+      width: 36px; height: 4px;
+      background: rgba(255,255,255,.15);
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+
+    /* 완료 아이콘 */
+    .complete-icon-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .complete-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, rgba(99,102,241,.3), rgba(168,85,247,.3));
+      border: 2px solid rgba(99,102,241,.5);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 14px;
+      box-shadow: 0 0 32px rgba(99,102,241,.25);
+      position: relative;
+    }
+    .complete-circle::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      border: 1px solid rgba(99,102,241,.15);
+    }
+    .complete-circle::after {
+      content: '';
+      position: absolute;
+      inset: -16px;
+      border-radius: 50%;
+      border: 1px solid rgba(99,102,241,.07);
+    }
+
+    .complete-label {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text-primary);
+      letter-spacing: -.5px;
+      text-align: center;
+    }
+    .complete-sub {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 5px;
+      line-height: 1.5;
+    }
+    .complete-sub strong { color: #a5b4fc; font-weight: 700; }
+
+    /* 진도 표시 */
+    .complete-progress {
+      margin: 18px 0;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+    .cp-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .cp-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .cp-cnt {
+      font-size: 12px;
+      font-weight: 800;
+      color: #a5b4fc;
+    }
+    .cp-bar {
+      height: 6px;
+      background: rgba(255,255,255,.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .cp-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .cp-dots-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .cp-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+    .cp-dot.done { background: var(--accent); }
+    .cp-dot.cur  { background: rgba(255,255,255,.5); }
+
+    /* 버튼들 */
+    .complete-btn-primary {
+      width: 100%;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(99,102,241,.35);
+      margin-bottom: 10px;
+    }
+    .complete-btn-primary span {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .complete-btn-secondary {
+      width: 100%;
+      height: 50px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .complete-btn-secondary span {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+
+    /* ────────────────────────────────
+       SCREEN 3 — 로그아웃 확인
+    ──────────────────────────────── */
+    .logout-screen {
+      position: relative;
+      width: 100%; height: 100%;
+    }
+
+    /* 배경: 메인 화면 흐릿하게 */
+    .logout-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #0d0d1a 0%, #0f172a 40%, #1a0533 100%);
+    }
+    /* 배경 수식 */
+    .lb-eq {
+      position: absolute;
+      font-weight: 900;
+      color: rgba(255,255,255,.03);
+      user-select: none;
+    }
+    .logout-dim {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* 모달 */
+    .logout-modal {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 310px;
+      background: #1e1e30;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      padding: 28px 24px 24px;
+      z-index: 10;
+      box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    }
+
+    /* 모달 아이콘 */
+    .logout-icon-wrap {
+      width: 52px; height: 52px;
+      background: rgba(239,68,68,.15);
+      border: 1px solid rgba(239,68,68,.25);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 18px;
+    }
+
+    .logout-modal-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: -.3px;
+    }
+    .logout-modal-desc {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .logout-modal-desc strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    /* 사용자 정보 칩 */
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+    }
+    .user-chip-avatar {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .user-chip-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .user-chip-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    /* 모달 버튼들 */
+    .modal-btn-row { display: flex; gap: 8px; }
+    .modal-btn {
+      flex: 1;
+      height: 48px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      border: none;
+    }
+    .modal-btn-cancel {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .modal-btn-cancel span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+    .modal-btn-confirm {
+      background: rgba(239,68,68,.15);
+      border: 1px solid rgba(239,68,68,.3);
+    }
+    .modal-btn-confirm span {
+      font-size: 14px;
+      font-weight: 700;
+      color: #f87171;
+    }
+
+    /* 배경에 흐릿한 메인 UI 힌트 */
+    .bg-ui-hint {
+      position: absolute;
+      top: 70px;
+      left: 18px; right: 18px;
+      z-index: 1;
+      opacity: .3;
+    }
+    .bg-cat-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .bg-pill {
+      padding: 5px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .bg-pill.a { background: #fff; color: #111; }
+    .bg-pill.i { background: rgba(255,255,255,.12); color: rgba(255,255,255,.5); }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ SCREEN 1: 성취기준 맵 ══════════ -->
+  <div class="screen-wrap">
+    <div class="screen-label">① 성취기준 맵</div>
+    <div class="device">
+      <div class="notch"></div>
+      <div class="map-screen">
+        <div class="dark-bg"></div>
+        <div class="bg-glow"></div>
+
+        <!-- 헤더 -->
+        <div class="map-header">
+          <div class="map-header-row">
+            <div class="icon-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M10 13L5 8l5-5" stroke="rgba(255,255,255,.75)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="map-title">성취기준 맵</span>
+          </div>
+
+          <!-- 전체 진도 카드 -->
+          <div class="progress-card">
+            <div class="pc-left">
+              <div class="pc-label">전체 학습 진도</div>
+              <div class="pc-bar"><div class="pc-fill" style="width:35%"></div></div>
+              <div class="pc-sub">3개 완료 · 5개 진행 중 · 8개 남음</div>
+            </div>
+            <div class="pc-pct">35<span>%</span></div>
+          </div>
+        </div>
+
+        <!-- 맵 리스트 -->
+        <div class="map-scroll">
+
+          <!-- 단원 1 -->
+          <div class="unit-section">
+            <div class="unit-header green">
+              <div class="unit-header-left">
+                <div class="unit-dot dot-green"></div>
+                <span class="unit-name">수와 연산</span>
+              </div>
+              <span class="unit-count">2 / 4 완료</span>
+            </div>
+
+            <!-- 범례 -->
+            <div class="map-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#4ade80;"></div>
+                <span class="legend-text">완료</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:#fb923c;"></div>
+                <span class="legend-text">넘김 (부분 시청)</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:rgba(255,255,255,.15);"></div>
+                <span class="legend-text">미시청</span>
+              </div>
+            </div>
+
+            <div class="ach-list">
+
+              <!-- 완료: 유리수와 순환소수 (영상 3개 모두 완료) -->
+              <div class="ach-item done">
+                <div class="ach-top">
+                  <div class="ach-status-icon si-done">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="7" fill="rgba(88,204,2,.2)"/>
+                      <path d="M5 8l2.5 2.5L11 5" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="ach-info">
+                    <div class="ach-code">수학-중2-01</div>
+                    <div class="ach-name">유리수와 순환소수</div>
+                  </div>
+                  <div class="ach-chevron">›</div>
+                </div>
+                <!-- 영상 3개: 모두 완료 -->
+                <div class="video-bars">
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill done"></div></div>
+                    <span class="vb-label done">완료</span>
+                  </div>
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill done"></div></div>
+                    <span class="vb-label done">완료</span>
+                  </div>
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill done"></div></div>
+                    <span class="vb-label done">완료</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="connector"></div>
+
+              <!-- 완료이지만 2번째 영상 넘김: 소수의 분류 -->
+              <div class="ach-item done">
+                <div class="ach-top">
+                  <div class="ach-status-icon si-done">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="7" fill="rgba(88,204,2,.2)"/>
+                      <path d="M5 8l2.5 2.5L11 5" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="ach-info">
+                    <div class="ach-code">수학-중2-02</div>
+                    <div class="ach-name">소수의 분류</div>
+                  </div>
+                  <div class="ach-chevron">›</div>
+                </div>
+                <!-- 영상 3개: 완료 / 넘김(42%) / 완료 -->
+                <div class="video-bars">
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill done"></div></div>
+                    <span class="vb-label done">완료</span>
+                  </div>
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill skipped" style="width:42%;"></div></div>
+                    <span class="vb-label skipped">42% 넘김</span>
+                  </div>
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill done"></div></div>
+                    <span class="vb-label done">완료</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="connector"></div>
+
+              <!-- 진행 중: 단항식의 계산 (1완료 / 1넘김 / 1미시청) -->
+              <div class="ach-item current">
+                <div class="ach-top">
+                  <div class="ach-status-icon si-current">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="7" stroke="rgba(99,102,241,.6)" stroke-width="1.5"/>
+                      <polygon points="6.5,5 11.5,8 6.5,11" fill="#818cf8"/>
+                    </svg>
+                  </div>
+                  <div class="ach-info">
+                    <div class="ach-code" style="color:#818cf8;">수학-중2-03</div>
+                    <div class="ach-name" style="color:#c7d2fe;">단항식의 계산</div>
+                  </div>
+                  <div class="ach-chevron" style="color:#818cf8;">›</div>
+                </div>
+                <!-- 영상 3개: 완료 / 넘김(67%) / 미시청 -->
+                <div class="video-bars">
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill done"></div></div>
+                    <span class="vb-label done">완료</span>
+                  </div>
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill skipped" style="width:67%;"></div></div>
+                    <span class="vb-label skipped">67% 넘김</span>
+                  </div>
+                  <div class="vb-wrap">
+                    <div class="vb-track"><div class="vb-fill unseen"></div></div>
+                    <span class="vb-label unseen">미시청</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="connector"></div>
+
+              <!-- 잠김 -->
+              <div class="ach-item locked">
+                <div class="ach-top">
+                  <div class="ach-status-icon si-locked">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <rect x="4" y="7" width="8" height="6" rx="1.5" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+                      <path d="M6 7V5a2 2 0 014 0v2" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="ach-info">
+                    <div class="ach-code">수학-중2-04</div>
+                    <div class="ach-name">다항식의 계산</div>
+                  </div>
+                  <div class="ach-chevron">›</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 단원 2 -->
+          <div class="unit-section">
+            <div class="unit-header blue" style="opacity:.6;">
+              <div class="unit-header-left">
+                <div class="unit-dot dot-blue"></div>
+                <span class="unit-name">방정식과 부등식</span>
+              </div>
+              <span class="unit-count">0 / 3 완료</span>
+            </div>
+            <div class="ach-list">
+              <div class="ach-item locked">
+                <div class="ach-top">
+                  <div class="ach-status-icon si-locked">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <rect x="4" y="7" width="8" height="6" rx="1.5" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+                      <path d="M6 7V5a2 2 0 014 0v2" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="ach-info">
+                    <div class="ach-code">수학-중2-05</div>
+                    <div class="ach-name">연립방정식</div>
+                  </div>
+                  <div class="ach-chevron">›</div>
+                </div>
+              </div>
+              <div class="connector"></div>
+              <div class="ach-item locked">
+                <div class="ach-top">
+                  <div class="ach-status-icon si-locked">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <rect x="4" y="7" width="8" height="6" rx="1.5" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+                      <path d="M6 7V5a2 2 0 014 0v2" stroke="rgba(255,255,255,.3)" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="ach-info">
+                    <div class="ach-code">수학-중2-06</div>
+                    <div class="ach-name">일차부등식</div>
+                  </div>
+                  <div class="ach-chevron">›</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 단원 3 -->
+          <div class="unit-section">
+            <div class="unit-header locked">
+              <div class="unit-header-left">
+                <div class="unit-dot dot-gray"></div>
+                <span class="unit-name" style="color:var(--text-muted);">도형과 측정</span>
+              </div>
+              <span class="unit-count">0 / 4 완료</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════ SCREEN 2: 영상 완료 후 ══════════ -->
+  <div class="screen-wrap">
+    <div class="screen-label">② 영상 완료 후</div>
+    <div class="device">
+      <div class="notch"></div>
+      <div class="complete-screen">
+
+        <div class="complete-video-bg"></div>
+        <div class="cv-eq">aⁿ·aᵐ</div>
+        <div class="complete-video-dim"></div>
+
+        <!-- 바텀 시트 -->
+        <div class="complete-sheet">
+          <div class="sheet-handle"></div>
+
+          <!-- 완료 아이콘 + 제목 -->
+          <div class="complete-icon-wrap">
+            <div class="complete-circle">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                <path d="M8 16l6 6 10-11" stroke="#a5b4fc" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="complete-label">학습 완료!</div>
+            <div class="complete-sub">
+              <strong>단항식의 계산</strong> 2번째 영상<br/>을 모두 시청했어요
+            </div>
+          </div>
+
+          <!-- 성취기준 진도 -->
+          <div class="complete-progress">
+            <div class="cp-row">
+              <span class="cp-name">단항식의 계산 진도</span>
+              <span class="cp-cnt">2 / 3 완료</span>
+            </div>
+            <div class="cp-bar">
+              <div class="cp-bar-fill" style="width:66%"></div>
+            </div>
+            <div class="cp-dots-row">
+              <div class="cp-dot done"></div>
+              <div class="cp-dot done"></div>
+              <div class="cp-dot cur"></div>
+            </div>
+          </div>
+
+          <!-- 버튼 -->
+          <button class="complete-btn-primary">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <polygon points="5,3 15,9 5,15" fill="white"/>
+            </svg>
+            <span>다음 영상 바로 보기</span>
+          </button>
+          <button class="complete-btn-secondary">
+            <span>성취기준 맵으로 이동</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════ SCREEN 3: 로그아웃 확인 ══════════ -->
+  <div class="screen-wrap">
+    <div class="screen-label">③ 로그아웃 확인</div>
+    <div class="device">
+      <div class="notch"></div>
+      <div class="logout-screen">
+
+        <div class="logout-bg">
+          <div class="lb-eq" style="font-size:140px; top:5%; right:-15%;">∑</div>
+          <div class="lb-eq" style="font-size:70px; bottom:25%; left:-5%;">∫</div>
+        </div>
+
+        <!-- 흐릿한 메인 UI 힌트 -->
+        <div class="bg-ui-hint">
+          <div class="bg-cat-row">
+            <span style="color:rgba(255,255,255,.3);font-size:12px;">‹</span>
+            <div class="bg-pill i">유리수</div>
+            <div class="bg-pill a">단항식</div>
+            <div class="bg-pill i">다항식</div>
+            <span style="color:rgba(255,255,255,.3);font-size:12px;">›</span>
+          </div>
+        </div>
+
+        <div class="logout-dim"></div>
+
+        <!-- 모달 -->
+        <div class="logout-modal">
+
+          <!-- 아이콘 -->
+          <div class="logout-icon-wrap">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="16 17 21 12 16 7" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="21" y1="12" x2="9" y2="12" stroke="#f87171" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+
+          <div class="logout-modal-title">로그아웃</div>
+          <div class="logout-modal-desc">
+            다음에 앱을 열면<br/>다시 로그인이 필요해요
+          </div>
+
+          <!-- 사용자 칩 -->
+          <div class="user-chip">
+            <div class="user-chip-avatar">김</div>
+            <div>
+              <div class="user-chip-name">김수학</div>
+              <div class="user-chip-sub">○○중학교 · 2학년</div>
+            </div>
+          </div>
+
+          <!-- 버튼 -->
+          <div class="modal-btn-row">
+            <button class="modal-btn modal-btn-cancel">
+              <span>취소</span>
+            </button>
+            <button class="modal-btn modal-btn-confirm">
+              <span>로그아웃</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

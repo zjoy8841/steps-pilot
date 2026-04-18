@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=375, initial-scale=1.0" />
+  <title>Steps — 메인</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #6366f1;
+      --accent2: #a855f7;
+      --glass-bg: rgba(255,255,255,0.10);
+      --glass-border: rgba(255,255,255,0.18);
+      --glass-blur: blur(14px);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #111;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 32px 0 48px;
+      gap: 40px;
+    }
+
+    /* ── 레이블 ── */
+    .screen-label {
+      color: #666;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .screen-wrap { display: flex; flex-direction: column; }
+
+    /* ── 폰 프레임 ── */
+    .device {
+      width: 375px;
+      height: 812px;
+      background: #000;
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      box-shadow:
+        0 0 0 10px #1c1c1e,
+        0 0 0 11px #3a3a3c,
+        0 40px 80px rgba(0,0,0,.6);
+      flex-shrink: 0;
+    }
+
+    /* 노치 */
+    .notch {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 126px; height: 30px;
+      background: #1c1c1e;
+      border-radius: 0 0 22px 22px;
+      z-index: 200;
+    }
+
+    /* ═══════════════════════════════
+       SCREEN 1 — 메인 쇼츠 플레이어
+    ═══════════════════════════════ */
+    .main-screen {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 비디오 배경 (수학 테마 시뮬레이션) */
+    .video-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #0d0d1a 0%, #0f172a 40%, #1a0533 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-math-decor {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .math-big {
+      font-size: 96px;
+      font-weight: 900;
+      color: rgba(255,255,255,.04);
+      letter-spacing: -4px;
+      user-select: none;
+      position: absolute;
+      top: 30%; left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .math-accent {
+      position: absolute;
+      width: 260px; height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,.18) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-55%);
+    }
+    .video-equation {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    .eq-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,.35);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .eq-main {
+      font-size: 42px;
+      font-weight: 700;
+      color: rgba(255,255,255,.85);
+      letter-spacing: -1px;
+      line-height: 1.2;
+    }
+    .eq-sub {
+      font-size: 16px;
+      font-weight: 400;
+      color: rgba(255,255,255,.4);
+      margin-top: 12px;
+    }
+    .play-indicator {
+      position: absolute;
+      bottom: 36%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 52px; height: 52px;
+      background: rgba(255,255,255,.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .play-triangle {
+      width: 0; height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 17px solid rgba(255,255,255,.85);
+      margin-left: 3px;
+    }
+
+    /* 상단 오버레이 */
+    .top-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 48px 18px 16px;
+      background: linear-gradient(to bottom, rgba(0,0,0,.65) 0%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* 햄버거 버튼 */
+    .hamburger-btn {
+      width: 40px; height: 40px;
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .hamburger-btn span {
+      display: block;
+      width: 18px; height: 1.8px;
+      background: rgba(255,255,255,.9);
+      border-radius: 2px;
+    }
+
+    /* 성취기준 카테고리 슬라이더 (수평) */
+    .category-row {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+    }
+    .cat-pill {
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .cat-pill.done {
+      background: rgba(255,255,255,.13);
+      color: rgba(255,255,255,.45);
+      text-decoration: line-through;
+    }
+    .cat-pill.active {
+      background: #fff;
+      color: #111;
+      font-weight: 700;
+    }
+    .cat-pill.next {
+      background: rgba(255,255,255,.13);
+      color: rgba(255,255,255,.6);
+    }
+    .cat-arrow {
+      color: rgba(255,255,255,.4);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* 우측 여백 */
+    .top-right-placeholder { width: 40px; flex-shrink: 0; }
+
+    /* 성취기준 위치 배지 */
+    .achievement-badge {
+      position: absolute;
+      top: 106px;
+      left: 18px;
+      z-index: 100;
+      background: rgba(99,102,241,.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(99,102,241,.4);
+      border-radius: 99px;
+      padding: 5px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #818cf8;
+      flex-shrink: 0;
+    }
+    .badge-text {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,.8);
+    }
+    .badge-progress {
+      font-size: 11px;
+      font-weight: 700;
+      color: #a5b4fc;
+    }
+
+    /* 우측 액션 버튼 */
+    .action-col {
+      position: absolute;
+      right: 14px;
+      bottom: 190px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .action-icon {
+      width: 46px; height: 46px;
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .action-icon svg { display: block; }
+    .action-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,.7);
+      letter-spacing: .3px;
+    }
+
+    /* 완료 버튼 특별 스타일 */
+    .action-btn.complete .action-icon {
+      background: rgba(99,102,241,.25);
+      border-color: rgba(99,102,241,.5);
+    }
+
+    /* 하단 정보 오버레이 */
+    .bottom-overlay {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 18px 28px;
+      background: linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.5) 60%, transparent 100%);
+    }
+
+    /* 성취기준 경로 */
+    .ach-path {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+    .ach-unit {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,.5);
+    }
+    .ach-chevron {
+      color: rgba(255,255,255,.3);
+      font-size: 11px;
+    }
+    .ach-current {
+      font-size: 11px;
+      font-weight: 700;
+      color: #a5b4fc;
+    }
+
+    /* 영상 제목 */
+    .video-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.4;
+      letter-spacing: -.3px;
+      margin-bottom: 10px;
+    }
+
+    /* 영상 순서 도트 */
+    .video-dots-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+    .v-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+    }
+    .v-dot.done { background: rgba(255,255,255,.55); }
+    .v-dot.current {
+      width: 20px;
+      border-radius: 3px;
+      background: #818cf8;
+    }
+    .dots-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(255,255,255,.4);
+      margin-left: 4px;
+    }
+
+    /* 스와이프 힌트 */
+    .swipe-hint-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .swipe-line {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,.1);
+    }
+    .swipe-hint-text {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(255,255,255,.35);
+      white-space: nowrap;
+    }
+
+    /* 영상 시크바 */
+    .seek-bar {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,.2);
+      border-radius: 99px;
+      overflow: visible;
+      position: relative;
+    }
+    .seek-fill {
+      height: 100%;
+      width: 38%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+      position: relative;
+    }
+    .seek-thumb {
+      position: absolute;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px; height: 10px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(99,102,241,.8);
+    }
+    .seek-time-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+    }
+    .seek-time {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(255,255,255,.4);
+    }
+
+    /* 오른쪽 카테고리 피크 */
+    .next-cat-peek {
+      position: absolute;
+      right: -8px;
+      top: 0; bottom: 0;
+      width: 28px;
+      background: linear-gradient(90deg, transparent, rgba(120,120,200,.12));
+      z-index: 90;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .peek-arrow {
+      writing-mode: vertical-rl;
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(255,255,255,.3);
+      letter-spacing: 1px;
+    }
+
+
+    /* ═══════════════════════════════
+       SCREEN 2 — 햄버거 메뉴 열림
+    ═══════════════════════════════ */
+    .menu-screen { width: 100%; height: 100%; position: relative; overflow: hidden; }
+
+    /* 어두운 배경 (비디오 계속 보임) */
+    .menu-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, #0d0d1a 0%, #0f172a 40%, #1a0533 100%);
+    }
+    .menu-bg-dimmer {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+
+    /* 메뉴 드로어 */
+    .menu-drawer {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 280px;
+      background: #12121e;
+      z-index: 150;
+      padding: 52px 0 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 드로어 헤더 */
+    .drawer-header {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .drawer-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .drawer-avatar {
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .drawer-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .drawer-sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255,255,255,.4);
+      margin-top: 2px;
+    }
+
+    /* 진도 미니 */
+    .drawer-progress {
+      margin-top: 16px;
+      background: rgba(255,255,255,.06);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .drawer-progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .dp-text { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.5); }
+    .dp-pct  { font-size: 13px; font-weight: 800; color: #818cf8; }
+    .dp-bar {
+      height: 5px;
+      background: rgba(255,255,255,.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .dp-fill {
+      height: 100%;
+      width: 35%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 99px;
+    }
+
+    /* 메뉴 아이템 */
+    .drawer-menu {
+      flex: 1;
+      padding: 16px 0;
+      overflow-y: auto;
+    }
+    .menu-section-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255,255,255,.25);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 24px 6px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 24px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .menu-item:hover { background: rgba(255,255,255,.04); }
+    .menu-item.active { background: rgba(99,102,241,.12); }
+    .menu-item-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+    }
+    .mi-purple { background: rgba(99,102,241,.2); }
+    .mi-blue   { background: rgba(59,130,246,.2); }
+    .mi-green  { background: rgba(16,185,129,.2); }
+    .mi-orange { background: rgba(245,158,11,.2); }
+    .mi-red    { background: rgba(239,68,68,.2); }
+    .menu-item-text { flex: 1; }
+    .mi-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,.85);
+    }
+    .menu-item.active .mi-title { color: #a5b4fc; }
+    .mi-sub {
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(255,255,255,.35);
+      margin-top: 1px;
+    }
+    .mi-badge {
+      font-size: 10px;
+      font-weight: 700;
+      background: var(--accent);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    /* 드로어 하단 */
+    .drawer-footer {
+      padding: 16px 24px 0;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+    .drawer-logout {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+    .logout-icon {
+      width: 32px; height: 32px;
+      background: rgba(239,68,68,.15);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .logout-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(239,68,68,.75);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ SCREEN 1: 쇼츠 메인 플레이어 ══════════ -->
+  <div class="screen-wrap">
+    <div class="screen-label">① 메인 — 쇼츠 플레이어</div>
+    <div class="device">
+      <div class="notch"></div>
+      <div class="main-screen">
+
+        <!-- 비디오 배경 시뮬레이션 -->
+        <div class="video-bg">
+          <div class="video-math-decor">
+            <div class="math-accent"></div>
+            <div class="math-big">ax·bx</div>
+          </div>
+          <div class="video-equation">
+            <div class="eq-label">단항식의 계산</div>
+            <div class="eq-main">aⁿ · aᵐ = aⁿ⁺ᵐ</div>
+            <div class="eq-sub">(a ≠ 0, n, m은 자연수)</div>
+          </div>
+          <div class="play-indicator">
+            <div class="play-triangle"></div>
+          </div>
+        </div>
+
+        <!-- 상단 오버레이 -->
+        <div class="top-overlay">
+          <!-- 햄버거 -->
+          <div class="hamburger-btn">
+            <span></span><span></span><span></span>
+          </div>
+
+          <!-- 성취기준 카테고리 가로 슬라이더 -->
+          <div class="category-row">
+            <span class="cat-arrow">‹</span>
+            <div class="cat-pill done">유리수</div>
+            <div class="cat-pill active">단항식</div>
+            <div class="cat-pill next">다항식</div>
+            <span class="cat-arrow">›</span>
+          </div>
+
+          <div class="top-right-placeholder"></div>
+        </div>
+
+        <!-- 성취기준 위치 배지 -->
+        <div class="achievement-badge">
+          <div class="badge-dot"></div>
+          <span class="badge-text">수와 연산 › 단항식의 계산</span>
+          <span class="badge-progress">2 / 3</span>
+        </div>
+
+        <!-- 우측 액션 버튼 -->
+        <div class="action-col">
+
+          <!-- 완료 -->
+          <div class="action-btn complete">
+            <div class="action-icon">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="9" stroke="rgba(165,180,252,.9)" stroke-width="1.8"/>
+                <path d="M7 11.5l3 3 5-5" stroke="#a5b4fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="action-label">완료</span>
+          </div>
+
+          <!-- 저장 -->
+          <div class="action-btn">
+            <div class="action-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M4 4h12v13l-6-3-6 3V4z" stroke="rgba(255,255,255,.75)" stroke-width="1.7" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="action-label">저장</span>
+          </div>
+
+          <!-- 공유 -->
+          <div class="action-btn">
+            <div class="action-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <circle cx="15" cy="4" r="2" stroke="rgba(255,255,255,.75)" stroke-width="1.6"/>
+                <circle cx="5"  cy="10" r="2" stroke="rgba(255,255,255,.75)" stroke-width="1.6"/>
+                <circle cx="15" cy="16" r="2" stroke="rgba(255,255,255,.75)" stroke-width="1.6"/>
+                <path d="M7 9l6-4M7 11l6 4" stroke="rgba(255,255,255,.75)" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="action-label">공유</span>
+          </div>
+
+        </div>
+
+        <!-- 하단 정보 오버레이 -->
+        <div class="bottom-overlay">
+
+          <!-- 성취기준 경로 -->
+          <div class="ach-path">
+            <span class="ach-unit">수와 연산</span>
+            <span class="ach-chevron">›</span>
+            <span class="ach-current">단항식의 계산</span>
+          </div>
+
+          <!-- 영상 제목 -->
+          <div class="video-title">지수법칙 완전 정복 — 곱셈과 나눗셈 핵심 정리</div>
+
+          <!-- 영상 순서 도트 -->
+          <div class="video-dots-row">
+            <div class="v-dot done"></div>
+            <div class="v-dot current"></div>
+            <div class="v-dot"></div>
+            <span class="dots-label">이 성취기준의 2번째 영상</span>
+          </div>
+
+          <!-- 스와이프 힌트 -->
+          <div class="swipe-hint-row">
+            <div class="swipe-line"></div>
+            <span class="swipe-hint-text">옆으로 밀면 다른 성취기준 영상 →</span>
+            <div class="swipe-line"></div>
+          </div>
+
+          <!-- 시크바 -->
+          <div class="seek-bar">
+            <div class="seek-fill">
+              <div class="seek-thumb"></div>
+            </div>
+          </div>
+          <div class="seek-time-row">
+            <span class="seek-time">1:24</span>
+            <span class="seek-time">3:52</span>
+          </div>
+
+        </div>
+
+        <!-- 우측 카테고리 피크 힌트 -->
+        <div class="next-cat-peek">
+          <span class="peek-arrow">다항식</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════ SCREEN 2: 햄버거 메뉴 열림 ══════════ -->
+  <div class="screen-wrap">
+    <div class="screen-label">② 햄버거 메뉴 열림</div>
+    <div class="device">
+      <div class="notch"></div>
+      <div class="menu-screen">
+
+        <!-- 배경 (비디오 흐릿하게) -->
+        <div class="menu-bg"></div>
+        <div class="menu-bg-dimmer"></div>
+
+        <!-- 드로어 -->
+        <div class="menu-drawer">
+
+          <!-- 프로필 헤더 -->
+          <div class="drawer-header">
+            <div class="drawer-profile">
+              <div class="drawer-avatar">김</div>
+              <div>
+                <div class="drawer-name">김수학</div>
+                <div class="drawer-sub">○○중학교 2학년</div>
+              </div>
+            </div>
+
+            <!-- 진도 미니 바 -->
+            <div class="drawer-progress">
+              <div class="drawer-progress-label">
+                <span class="dp-text">전체 학습 진도</span>
+                <span class="dp-pct">35%</span>
+              </div>
+              <div class="dp-bar"><div class="dp-fill"></div></div>
+            </div>
+          </div>
+
+          <!-- 메뉴 항목 -->
+          <div class="drawer-menu">
+
+            <div class="menu-section-title">학습</div>
+
+            <div class="menu-item active">
+              <div class="menu-item-icon mi-purple">▶</div>
+              <div class="menu-item-text">
+                <div class="mi-title">쇼츠 보기</div>
+                <div class="mi-sub">지금 추천된 영상 시청</div>
+              </div>
+            </div>
+
+            <div class="menu-item">
+              <div class="menu-item-icon mi-blue">🗺</div>
+              <div class="menu-item-text">
+                <div class="mi-title">성취기준 맵</div>
+                <div class="mi-sub">전체 학습 경로 보기</div>
+              </div>
+            </div>
+
+            <div class="menu-item">
+              <div class="menu-item-icon mi-green">✓</div>
+              <div class="menu-item-text">
+                <div class="mi-title">내 시청 기록</div>
+                <div class="mi-sub">완료한 영상 목록</div>
+              </div>
+              <div class="mi-badge">12</div>
+            </div>
+
+            <div class="menu-section-title">탐색</div>
+
+            <div class="menu-item">
+              <div class="menu-item-icon mi-orange">🔍</div>
+              <div class="menu-item-text">
+                <div class="mi-title">전체 영상 목록</div>
+                <div class="mi-sub">성취기준별 모아보기</div>
+              </div>
+            </div>
+
+            <div class="menu-section-title">기타</div>
+
+            <div class="menu-item">
+              <div class="menu-item-icon mi-blue" style="font-size:15px;">⚙</div>
+              <div class="menu-item-text">
+                <div class="mi-title">설정</div>
+                <div class="mi-sub">알림 · 계정 정보</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 로그아웃 -->
+          <div class="drawer-footer">
+            <div class="drawer-logout">
+              <div class="logout-icon">↩</div>
+              <span class="logout-text">로그아웃</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

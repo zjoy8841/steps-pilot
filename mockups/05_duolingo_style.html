@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=375, initial-scale=1.0" />
+  <title>Steps — Learning Path</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #e5e7eb;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px 0;
+    }
+
+    /* ── 기기 프레임 ── */
+    .device {
+      width: 375px;
+      min-height: 812px;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+      border-radius: 40px;
+      box-shadow: 0 32px 80px rgba(0,0,0,.22), 0 0 0 10px #1a1a1a, 0 0 0 11px #333;
+    }
+    .device-inner {
+      height: 812px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    .device-inner::-webkit-scrollbar { display: none; }
+
+    /* ── 상단 노치 ── */
+    .notch {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 120px; height: 28px;
+      background: #1a1a1a;
+      border-radius: 0 0 20px 20px;
+      z-index: 100;
+    }
+
+    /* ── 헤더 ── */
+    .header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      z-index: 50;
+      padding: 48px 20px 12px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: #58CC02;
+      border-radius: 10px;
+      border-bottom: 3px solid #45a800;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text {
+      font-size: 18px;
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+    }
+    .stats-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stat-icon { font-size: 20px; line-height: 1; }
+    .stat-val {
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .stat-val.orange { color: #FF9600; }
+    .stat-val.purple { color: #CE82FF; }
+    .stat-val.red    { color: #FF4B4B; }
+
+    /* XP 프로그레스 */
+    .xp-bar-wrap {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .xp-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #afafaf;
+      white-space: nowrap;
+    }
+    .xp-bar {
+      flex: 1;
+      height: 8px;
+      background: #f0f0f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .xp-fill {
+      height: 100%;
+      width: 62%;
+      background: linear-gradient(90deg, #58CC02, #9be832);
+      border-radius: 99px;
+    }
+    .xp-end {
+      font-size: 11px;
+      font-weight: 800;
+      color: #58CC02;
+      white-space: nowrap;
+    }
+
+    /* ── 오늘의 목표 카드 ── */
+    .daily-card {
+      margin: 14px 16px 0;
+      background: linear-gradient(135deg, #fff7e6 0%, #fff3d6 100%);
+      border: 2px solid #FFD900;
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .daily-icon-wrap {
+      width: 48px; height: 48px;
+      background: #FFD900;
+      border-radius: 14px;
+      border-bottom: 3px solid #c9a800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 24px;
+    }
+    .daily-info { flex: 1; }
+    .daily-title { font-size: 13px; font-weight: 800; color: #7a5800; }
+    .daily-sub   { font-size: 11px; font-weight: 600; color: #b08000; margin-top: 2px; }
+    .daily-progress {
+      margin-top: 7px;
+      height: 7px;
+      background: #ffe99a;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .daily-fill {
+      height: 100%;
+      width: 40%;
+      background: #FFD900;
+      border-radius: 99px;
+    }
+    .daily-badge {
+      background: #FFD900;
+      color: #7a5800;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 4px 10px;
+      border-radius: 99px;
+      border-bottom: 2px solid #c9a800;
+      white-space: nowrap;
+    }
+
+    /* ── 단원 배너 ── */
+    .unit-banner {
+      margin: 20px 16px 0;
+      border-radius: 20px;
+      padding: 18px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .unit-banner::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+    }
+    .unit-banner::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; right: 30px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+    .unit-banner.green  { background: linear-gradient(135deg, #58CC02 0%, #3aab00 100%); box-shadow: 0 6px 0 #2d8a00, 0 8px 20px rgba(88,204,2,.25); }
+    .unit-banner.blue   { background: linear-gradient(135deg, #1CB0F6 0%, #0e96d8 100%); box-shadow: 0 6px 0 #0a7ab8, 0 8px 20px rgba(28,176,246,.25); }
+    .unit-banner.purple { background: linear-gradient(135deg, #CE82FF 0%, #aa5ee8 100%); box-shadow: 0 6px 0 #8f44cc, 0 8px 20px rgba(206,130,255,.25); }
+    .unit-banner.locked { background: linear-gradient(135deg, #c0c8d4 0%, #a8b2be 100%); box-shadow: 0 6px 0 #8a9aaa; opacity: .65; }
+    .unit-left { position: relative; z-index: 1; }
+    .unit-number { font-size: 11px; font-weight: 800; color: rgba(255,255,255,.7); letter-spacing: 2px; text-transform: uppercase; }
+    .unit-title  { font-size: 20px; font-weight: 900; color: #fff; margin-top: 2px; letter-spacing: -0.5px; }
+    .unit-sub    { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.65); margin-top: 3px; }
+    .unit-guide-btn {
+      margin-top: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,.25);
+      border: 1.5px solid rgba(255,255,255,.4);
+      border-radius: 99px;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+    }
+    .unit-emoji-wrap {
+      position: relative; z-index: 1;
+      width: 62px; height: 62px;
+      background: rgba(255,255,255,.2);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    /* ── 스킬 패스 ── */
+    .skill-path {
+      padding: 8px 0 0;
+      position: relative;
+    }
+
+    /* 세로 점선 라인 */
+    .path-spine {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 0; bottom: 0;
+      width: 0;
+      border-left: 4px dashed #e0e4e8;
+      z-index: 0;
+    }
+
+    .path-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .path-row.left  { justify-content: flex-start; padding-left: 40px; }
+    .path-row.right { justify-content: flex-end;   padding-right: 40px; }
+    .path-row.center { justify-content: center; }
+
+    /* 노드 공통 */
+    .node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .node-btn {
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      position: relative;
+      transition: transform .1s;
+      user-select: none;
+    }
+    .node-btn:active { transform: translateY(4px); }
+
+    /* 완료 노드 */
+    .node-btn.done {
+      background: #58CC02;
+      border-bottom: 6px solid #45a800;
+      box-shadow: 0 2px 12px rgba(88,204,2,.35);
+    }
+    /* 현재 노드 */
+    .node-btn.current {
+      background: #1CB0F6;
+      border-bottom: 6px solid #0e96d8;
+      box-shadow: 0 2px 16px rgba(28,176,246,.4);
+      width: 88px; height: 88px;
+    }
+    /* 현재 노드 펄스링 */
+    .node-btn.current::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 4px solid rgba(28,176,246,.35);
+      animation: pulse-ring 1.8s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0%   { transform: scale(.85); opacity: 1; }
+      100% { transform: scale(1.25); opacity: 0; }
+    }
+    /* 잠김 노드 */
+    .node-btn.locked {
+      background: #c0c8d4;
+      border-bottom: 6px solid #a2adb8;
+    }
+    /* 체크포인트 노드 */
+    .node-btn.chest {
+      background: linear-gradient(145deg, #FFD900, #FFB800);
+      border-bottom: 6px solid #c9850a;
+      box-shadow: 0 2px 14px rgba(255,184,0,.4);
+      width: 80px; height: 80px;
+      border-radius: 22px;
+    }
+
+    .node-icon { font-size: 28px; line-height: 1; }
+    .node-btn.current .node-icon { font-size: 34px; }
+    .node-label-sm {
+      font-size: 9px;
+      font-weight: 800;
+      color: rgba(255,255,255,.85);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    /* 별 평점 */
+    .node-stars {
+      display: flex; gap: 2px;
+    }
+    .star { font-size: 13px; }
+
+    /* 노드 텍스트 라벨 */
+    .node-tag {
+      background: #f8f9fa;
+      border: 1.5px solid #e8eaed;
+      border-radius: 12px;
+      padding: 5px 10px;
+      text-align: center;
+      max-width: 100px;
+    }
+    .node-tag.done-tag {
+      background: #f0fde6;
+      border-color: #c6f2a0;
+    }
+    .node-tag.current-tag {
+      background: #e6f6ff;
+      border-color: #a8dff7;
+    }
+    .node-tag p {
+      font-size: 11px;
+      font-weight: 800;
+      color: #888;
+      line-height: 1.35;
+    }
+    .node-tag.done-tag p    { color: #3aab00; }
+    .node-tag.current-tag p { color: #0e96d8; }
+
+    /* 말풍선 */
+    .speech-bubble {
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 8px 14px;
+      border-radius: 14px;
+      position: relative;
+      white-space: nowrap;
+      margin-bottom: 6px;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 7px solid transparent;
+      border-top-color: #1a1a1a;
+      border-bottom: none;
+    }
+
+    /* 체크포인트 배너 */
+    .checkpoint-banner {
+      margin: 6px 16px 8px;
+      background: linear-gradient(135deg, #fff7cc 0%, #fff0a0 100%);
+      border: 2px solid #FFD900;
+      border-radius: 18px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .checkpoint-icon {
+      width: 50px; height: 50px;
+      background: linear-gradient(145deg, #FFD900, #FFB800);
+      border-radius: 14px;
+      border-bottom: 3px solid #c9850a;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .checkpoint-info .cp-title { font-size: 13px; font-weight: 900; color: #7a5800; }
+    .checkpoint-info .cp-sub   { font-size: 11px; font-weight: 600; color: #a07010; margin-top: 2px; }
+    .cp-btn {
+      margin-left: auto;
+      background: #FFD900;
+      color: #7a5800;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 8px 14px;
+      border-radius: 12px;
+      border-bottom: 3px solid #c9a800;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    /* ── 하단 탭바 ── */
+    .tabbar {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      border-top: 2px solid #f0f0f0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0 16px;
+    }
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 6px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+    .tab-item.active { background: #f0fde6; }
+    .tab-icon { font-size: 22px; line-height: 1; }
+    .tab-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #ccc;
+    }
+    .tab-item.active .tab-label { color: #58CC02; }
+
+    /* ── 하단 여백 ── */
+    .bottom-spacer { height: 12px; }
+  </style>
+</head>
+<body>
+<div class="device">
+  <div class="notch"></div>
+  <div class="device-inner">
+
+    <!-- ════ 헤더 ════ -->
+    <div class="header">
+      <div class="header-row">
+        <div class="logo">
+          <div class="logo-icon">📐</div>
+          <span class="logo-text">Steps</span>
+        </div>
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-icon">🔥</span>
+            <span class="stat-val orange">7</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">💎</span>
+            <span class="stat-val purple">340</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">❤️</span>
+            <span class="stat-val red">5</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="xp-bar-wrap">
+        <span class="xp-label">Lv.4</span>
+        <div class="xp-bar">
+          <div class="xp-fill"></div>
+        </div>
+        <span class="xp-end">340 / 550 XP</span>
+      </div>
+    </div>
+
+    <!-- ════ 오늘의 목표 ════ -->
+    <div class="daily-card">
+      <div class="daily-icon-wrap">🎯</div>
+      <div class="daily-info">
+        <div class="daily-title">오늘의 목표</div>
+        <div class="daily-sub">영상 2개 시청 · 2/5 완료</div>
+        <div class="daily-progress">
+          <div class="daily-fill"></div>
+        </div>
+      </div>
+      <div class="daily-badge">+50 XP</div>
+    </div>
+
+    <!-- ════ 단원 1 배너 ════ -->
+    <div class="unit-banner green">
+      <div class="unit-left">
+        <div class="unit-number">단원 1</div>
+        <div class="unit-title">수와 연산</div>
+        <div class="unit-sub">유리수 · 단항식 · 다항식</div>
+        <div class="unit-guide-btn">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1L9 5L5 9M1 5h8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          단원 가이드 보기
+        </div>
+      </div>
+      <div class="unit-emoji-wrap">🔢</div>
+    </div>
+
+    <!-- ════ 스킬 패스 1 ════ -->
+    <div class="skill-path">
+      <div class="path-spine"></div>
+
+      <!-- 노드 1: 완료 (왼쪽) -->
+      <div class="path-row left" style="margin-top:24px;">
+        <div class="node">
+          <div class="node-btn done">
+            <span class="node-icon">⭐</span>
+            <span class="node-label-sm">완료</span>
+          </div>
+          <div class="node-stars">
+            <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+          </div>
+          <div class="node-tag done-tag">
+            <p>유리수와<br/>순환소수</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 노드 2: 완료 (오른쪽) -->
+      <div class="path-row right">
+        <div class="node">
+          <div class="node-btn done">
+            <span class="node-icon">⭐</span>
+            <span class="node-label-sm">완료</span>
+          </div>
+          <div class="node-stars">
+            <span class="star">⭐</span><span class="star">⭐</span><span class="star" style="filter:grayscale(1);opacity:.4">⭐</span>
+          </div>
+          <div class="node-tag done-tag">
+            <p>소수의<br/>분류</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 현재 노드 말풍선 + 노드 (가운데) -->
+      <div class="path-row center" style="flex-direction:column; align-items:center; margin-top:8px;">
+        <div class="speech-bubble">지금 여기서 시작하세요! 👋</div>
+        <div class="node">
+          <div class="node-btn current">
+            <span class="node-icon">▶️</span>
+            <span class="node-label-sm">학습 중</span>
+          </div>
+          <div class="node-tag current-tag">
+            <p>단항식의<br/>계산</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 노드 4: 잠김 (왼쪽) -->
+      <div class="path-row left" style="margin-top:6px;">
+        <div class="node">
+          <div class="node-btn locked">
+            <span class="node-icon" style="font-size:26px;filter:grayscale(1);opacity:.6">🔒</span>
+          </div>
+          <div class="node-tag">
+            <p>다항식의<br/>계산</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 노드 5: 잠김 (오른쪽) -->
+      <div class="path-row right">
+        <div class="node">
+          <div class="node-btn locked">
+            <span class="node-icon" style="font-size:26px;filter:grayscale(1);opacity:.6">🔒</span>
+          </div>
+          <div class="node-tag">
+            <p>인수<br/>분해</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /skill-path 1 -->
+
+    <!-- ════ 체크포인트 배너 ════ -->
+    <div class="checkpoint-banner">
+      <div class="checkpoint-icon">🏆</div>
+      <div class="checkpoint-info">
+        <div class="cp-title">단원 1 완료 보상</div>
+        <div class="cp-sub">모든 성취기준 완료 시 해금</div>
+      </div>
+      <div class="cp-btn">잠김</div>
+    </div>
+
+    <!-- ════ 단원 2 배너 ════ -->
+    <div class="unit-banner blue" style="margin-top:8px;">
+      <div class="unit-left">
+        <div class="unit-number">단원 2</div>
+        <div class="unit-title">방정식과 부등식</div>
+        <div class="unit-sub">연립방정식 · 일차부등식</div>
+        <div class="unit-guide-btn" style="background:rgba(255,255,255,.15);">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M5 1L9 5L5 9M1 5h8" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          단원 가이드 보기
+        </div>
+      </div>
+      <div class="unit-emoji-wrap">⚖️</div>
+    </div>
+
+    <!-- ════ 스킬 패스 2 (잠김) ════ -->
+    <div class="skill-path">
+      <div class="path-spine"></div>
+
+      <div class="path-row center" style="margin-top:24px;">
+        <div class="node">
+          <div class="node-btn locked">
+            <span class="node-icon" style="font-size:26px;filter:grayscale(1);opacity:.6">🔒</span>
+          </div>
+          <div class="node-tag"><p>연립<br/>방정식</p></div>
+        </div>
+      </div>
+
+      <div class="path-row left">
+        <div class="node">
+          <div class="node-btn locked">
+            <span class="node-icon" style="font-size:26px;filter:grayscale(1);opacity:.6">🔒</span>
+          </div>
+          <div class="node-tag"><p>일차<br/>부등식</p></div>
+        </div>
+      </div>
+
+      <div class="path-row right" style="margin-bottom:16px;">
+        <div class="node">
+          <div class="node-btn locked">
+            <span class="node-icon" style="font-size:26px;filter:grayscale(1);opacity:.6">🔒</span>
+          </div>
+          <div class="node-tag"><p>연립<br/>부등식</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ 단원 3 배너 (잠김) ════ -->
+    <div class="unit-banner locked" style="margin-top:8px;">
+      <div class="unit-left">
+        <div class="unit-number">단원 3</div>
+        <div class="unit-title">도형과 측정</div>
+        <div class="unit-sub">삼각형 · 사각형 · 원</div>
+      </div>
+      <div class="unit-emoji-wrap">📐</div>
+    </div>
+
+    <div class="bottom-spacer"></div>
+
+    <!-- ════ 탭바 ════ -->
+    <div class="tabbar">
+      <div class="tab-item active">
+        <span class="tab-icon">🏠</span>
+        <span class="tab-label" style="color:#58CC02;">홈</span>
+      </div>
+      <div class="tab-item">
+        <span class="tab-icon" style="filter:grayscale(1);opacity:.45;">🔍</span>
+        <span class="tab-label">탐색</span>
+      </div>
+      <div class="tab-item">
+        <span class="tab-icon" style="filter:grayscale(1);opacity:.45;">🏆</span>
+        <span class="tab-label">랭킹</span>
+      </div>
+      <div class="tab-item">
+        <span class="tab-icon" style="filter:grayscale(1);opacity:.45;">👤</span>
+        <span class="tab-label">내 정보</span>
+      </div>
+    </div>
+
+  </div><!-- /device-inner -->
+</div><!-- /device -->
+</body>
+</html>

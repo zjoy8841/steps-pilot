@@ -1,0 +1,4 @@
+/* Steps 앱 전역 스타일 */
+input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}

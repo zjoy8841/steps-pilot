@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=375, initial-scale=1.0" />
+  <title>성취기준 맵</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 flex items-center justify-center min-h-screen">
+  <div class="w-[375px] min-h-[812px] bg-slate-50 flex flex-col relative overflow-hidden">
+
+    <!-- 헤더 -->
+    <div class="bg-white px-5 pt-12 pb-4 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs text-slate-400">안녕하세요 👋</p>
+          <h1 class="text-slate-800 text-lg font-bold">김수학 학생</h1>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-center">
+            <span class="text-lg">👤</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 진도 요약 -->
+      <div class="mt-4 bg-indigo-50 rounded-xl p-3 flex items-center gap-3">
+        <div class="flex-1">
+          <p class="text-xs text-indigo-600 font-semibold">전체 학습 진도</p>
+          <div class="mt-1.5 bg-indigo-100 rounded-full h-2">
+            <div class="bg-indigo-500 h-2 rounded-full w-[35%]"></div>
+          </div>
+        </div>
+        <span class="text-indigo-700 font-bold text-lg">35%</span>
+      </div>
+    </div>
+
+    <!-- 탭 -->
+    <div class="bg-white px-5 pt-3 pb-0 flex gap-4 border-b border-slate-100">
+      <button class="pb-3 text-sm font-bold text-indigo-600 border-b-2 border-indigo-600">성취기준 맵</button>
+      <button class="pb-3 text-sm font-medium text-slate-400">전체 영상</button>
+      <button class="pb-3 text-sm font-medium text-slate-400">추천</button>
+    </div>
+
+    <!-- 스크롤 영역 -->
+    <div class="flex-1 overflow-y-auto px-4 pt-4 pb-6">
+
+      <!-- 단원 1 -->
+      <div class="mb-5">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-1 h-5 bg-indigo-500 rounded-full"></div>
+          <h2 class="text-sm font-bold text-slate-700">수와 연산</h2>
+        </div>
+
+        <!-- 성취기준 노드들 -->
+        <div class="space-y-2 ml-3">
+
+          <!-- 완료 -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-emerald-100 flex items-center gap-3">
+            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-emerald-600 text-lg">✓</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-medium">완료</span>
+                <span class="text-xs text-slate-400">수학-중2-01</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-700 mt-0.5 truncate">유리수와 순환소수</p>
+            </div>
+            <span class="text-slate-300 text-lg">›</span>
+          </div>
+
+          <!-- 화살표 -->
+          <div class="flex justify-center text-slate-300 text-lg">↓</div>
+
+          <!-- 진행 중 (선택됨) -->
+          <div class="bg-indigo-600 rounded-2xl p-4 shadow-md shadow-indigo-200 flex items-center gap-3">
+            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-white text-lg">▶</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-indigo-200 bg-white/20 px-2 py-0.5 rounded-full font-medium">학습 중</span>
+                <span class="text-xs text-indigo-300">수학-중2-02</span>
+              </div>
+              <p class="text-sm font-bold text-white mt-0.5 truncate">단항식의 계산</p>
+            </div>
+            <span class="text-indigo-300 text-lg">›</span>
+          </div>
+
+          <!-- 화살표 -->
+          <div class="flex justify-center text-slate-300 text-lg">↓</div>
+
+          <!-- 잠금 -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3 opacity-50">
+            <div class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-slate-400 text-lg">🔒</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full font-medium">선수학습 필요</span>
+                <span class="text-xs text-slate-300">수학-중2-03</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-500 mt-0.5 truncate">다항식의 계산</p>
+            </div>
+            <span class="text-slate-300 text-lg">›</span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 단원 2 -->
+      <div class="mb-5">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-1 h-5 bg-violet-500 rounded-full"></div>
+          <h2 class="text-sm font-bold text-slate-700">방정식과 부등식</h2>
+        </div>
+
+        <div class="space-y-2 ml-3">
+
+          <!-- 미시청 -->
+          <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center gap-3">
+            <div class="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center flex-shrink-0">
+              <span class="text-violet-500 text-lg">○</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-violet-500 bg-violet-50 px-2 py-0.5 rounded-full font-medium">미시청</span>
+                <span class="text-xs text-slate-400">수학-중2-04</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-700 mt-0.5 truncate">연립방정식</p>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-xs text-slate-400">영상 3개</span>
+              <span class="text-slate-300 text-lg">›</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <div class="bg-white border-t border-slate-100 px-6 py-3 flex justify-around items-center">
+      <button class="flex flex-col items-center gap-1">
+        <span class="text-xl">🗺️</span>
+        <span class="text-xs font-bold text-indigo-600">맵</span>
+      </button>
+      <button class="flex flex-col items-center gap-1">
+        <span class="text-xl">▶️</span>
+        <span class="text-xs text-slate-400">영상</span>
+      </button>
+      <button class="flex flex-col items-center gap-1">
+        <span class="text-xl">⭐</span>
+        <span class="text-xs text-slate-400">추천</span>
+      </button>
+      <button class="flex flex-col items-center gap-1">
+        <span class="text-xl">👤</span>
+        <span class="text-xs text-slate-400">내 정보</span>
+      </button>
+    </div>
+
+  </div>
+</body>
+</html>
